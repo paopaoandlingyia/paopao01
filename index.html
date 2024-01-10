@@ -3,15 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat with AI</title>
+<title>CWA</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+  }
+  #chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 300px;
+    overflow: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #fff;
+    margin-bottom: 10px;
+  }
+  #user-input {
+    width: calc(100% - 120px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+  }
+  button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  .message {
+    display: flex;
+    justify-content: flex-end;
+    padding: 5px;
+    margin-bottom: 5px;
+  }
+  .user-message {
+    margin-left: auto;
+    background-color: #dcf8c6;
+    border-radius: 10px;
+    padding: 10px;
+  }
+  .ai-message {
+    margin-right: auto;
+    background-color: #e5e5ea;
+    border-radius: 10px;
+    padding: 10px;
+  }
+</style>
 </head>
 <body>
-<h1>Chat with AI</h1>
-<div id="chat-container" style="height: 300px; overflow: auto; border: 1px solid #ccc; padding: 10px;">
+<h1 style="text-align: center;">CWA</h1>
+<div id="chat-container">
   <!-- Chat messages will be displayed here -->
 </div>
-<input type="text" id="user-input" placeholder="Say something..." style="width: calc(100% - 110px);">
-<button onclick="sendMessage()">Send</button>
+<div style="display: flex; justify-content: center; padding: 10px;">
+  <input type="text" id="user-input" placeholder="说点儿什么吧...">
+  <button onclick="sendMessage()">发送</button>
+</div>
 
 <script>
 // This function will be called when the user clicks the send button
@@ -81,12 +137,25 @@ function sendMessage() {
 function addToChat(text, sender) {
   var chatContainer = document.getElementById('chat-container');
   var messageDiv = document.createElement('div'); // Create a new div for the message
-  messageDiv.textContent = sender + ': ' + text;
+  messageDiv.classList.add('message'); // Add the message class
+  var innerDiv = document.createElement('div'); // Create a new inner div for the text
+  innerDiv.textContent = text;
+
+  if (sender === 'You') {
+    innerDiv.classList.add('user-message');
+    messageDiv.classList.add('user-message');
+  } else if (sender === 'AI') {
+    innerDiv.classList.add('ai-message');
+    messageDiv.classList.add('ai-message');
+  }
+
+  messageDiv.appendChild(innerDiv); // Add the inner div to the message div
   chatContainer.appendChild(messageDiv); // Add the message div to the chat container
 
   // Scroll to the bottom of the chat container
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
+
 </script>
 </body>
 </html>
