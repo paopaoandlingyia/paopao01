@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat with AI</title>
+</head>
+<body>
+<h1>Chat with AI</h1>
+<div id="chat-container" style="height: 300px; overflow: auto; border: 1px solid #ccc; padding: 10px;">
+  <!-- Chat messages will be displayed here -->
+</div>
+<input type="text" id="user-input" placeholder="Say something..." style="width: calc(100% - 110px);">
+<button onclick="sendMessage()">Send</button>
+
+<script>
+// This function will be called when the user clicks the send button
+// 全局变量，存储对话历史
+var conversationHistory = [];
+const apiUrl = 'https://oneapi.aivvm.com/v1/chat/completions'; // 替换为您的API的URL
+const headers = {
+  'Content-Type': 'application/json',
+  'Authorization' :'Bearer sk-NbQxnllvhVlXbjwt03F4B5A54c8b4f5fA72223Be8eA0F88f'
+  // 如果API需要的话，您可能需要添加额外的头信息，例如API密钥
+  //'Authorization': 'Bearer YOUR_API_KEY'
+};
+
+function sendMessageToAPI(userMessage) {
+  conversationHistory.push({ "role": "user", "content": userMessage });
+  // 构建请求的数据体
+  const data = {
+    model: "gpt-4",
+    messages: conversationHistory,
+    presence_penalty: 0
+  };
+  // 打印请求数据，检查是否正确
+  console.log('Sending request with data:', data);
+  // 使用fetch函数发送请求
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(data) // 将JavaScript对象转为JSON字符串
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    // 打印响应数据，验证内容
+    console.log('Received response:', data);
+    const aiResponse = data.choices[0].message.content; // 获取AI响应内容
+    addToChat(aiResponse, 'AI'); // 将AI的回复添加到聊天框中
+    conversationHistory.push({ "role": "assistant", "content": aiResponse });
+  })
+  .catch((error) => {
+    // 打印出现的错误
+    console.error('Error:', error);
+    console.error('Error:', error);
+    addToChat('Sorry, there was an error communicating with the AI.', 'Error'); // 显示错误消息
+  });
+}
+
+function sendMessage() {
+  var userInputField = document.getElementById('user-input');
+  var userText = userInputField.value; // Get the user input
+
+  if (userText.trim() === '') return; // Don't send empty messages
+
+  // Display the user's message in the chat container
+  addToChat(userText, 'You');
+
+  sendMessageToAPI(userText);
+  // Call your API with the user's message here
+  // For the purposes of this example, we'll just simulate a response
+  userInputField.value = ''; // Clear the input field
+}
+
+// This function adds messages to the chat container
+function addToChat(text, sender) {
+  var chatContainer = document.getElementById('chat-container');
+  var messageDiv = document.createElement('div'); // Create a new div for the message
+  messageDiv.textContent = sender + ': ' + text;
+  chatContainer.appendChild(messageDiv); // Add the message div to the chat container
+
+  // Scroll to the bottom of the chat container
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+</script>
+</body>
+</html>
